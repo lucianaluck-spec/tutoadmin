@@ -1,0 +1,36 @@
+<app-dropdown class="user-menu">
+    <ng-container dropdown-button>
+        <img
+            [src]="user.picture || 'assets/img/default-profile.png'"
+            class="user-image img-circle elevation-2"
+            alt="Foto do usuário"
+        />
+    </ng-container>
+    <ng-container dropdown-menu>
+        <li class="user-header bg-primary">
+            <img
+                [src]="user.picture || 'assets/img/default-profile.png'"
+                class="img-circle elevation-2"
+                alt="Foto do usuário"
+            />
+
+            <p>
+                <span>{{ user.email }}</span>
+                <small>
+                    <span>Cadastrado em </span>
+                    <span>{{ formatDate(user.createdAt) }}</span>
+                </small>
+            </p>
+        </li>
+        <!-- Menu Body -->
+        <!-- Menu Footer-->
+        <li class="user-footer">
+            <a [routerLink]="['/profile']" class="btn btn-default btn-flat">
+                Conta do usuário
+            </a>
+            <a (click)="logout()" class="btn btn-default btn-flat float-right"
+                >Sair</a
+            >
+        </li>
+    </ng-container>
+</app-dropdown>

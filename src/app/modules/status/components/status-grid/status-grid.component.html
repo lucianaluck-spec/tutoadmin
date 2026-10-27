@@ -1,0 +1,85 @@
+<section class="content-header">
+
+    <p-panel header="Explicações dos Status">
+  
+      <p-toolbar styleClass="mb-4">
+  
+        <ng-template pTemplate="left">
+          <input pInputText
+            type="text"
+            placeholder="Pesquisar..."
+            (input)="dt.filterGlobal($event.target.value, 'contains')"
+          />
+        </ng-template>
+  
+        <ng-template pTemplate="right">
+  
+          <button pButton pRipple
+            label=""
+            pTooltip="atualiza a lista de registros"
+            tooltipPosition="top"
+            icon="pi pi-refresh"
+            class="p-button-sm p-button-info"
+            (click)="refreshOnClick()">
+          </button>
+      </ng-template>
+  
+      </p-toolbar>
+  
+      <p-table #dt
+        dataKey="id"
+        [value]="records"
+        [(selection)]="selectedRecords"
+        [globalFilterFields]="['status','nome', 'descricao']"
+        [paginator]="true"
+        [rows]="15"
+        [rowsPerPageOptions]="[15, 20, 50, 100]"
+        sortMode="multiple"
+        [scrollable]="true"
+        [resizableColumns]="true"
+        responsiveLayout="stack"
+        styleClass="p-datatable-sm"
+        [rowHover]="true"
+        [responsive]="true"
+        currentPageReportTemplate="Listando {first} a {last} de {totalRecords} registros"
+        [showCurrentPageReport]="true">
+  
+        <ng-template pTemplate="header">
+          <tr>
+           
+            <th class="table-id">Ações</th>
+            <th pResizableColumn class="table-15" pSortableColumn="id">Status<p-sortIcon field="id"></p-sortIcon></th>
+            <th pResizableColumn pSortableColumn="descricao">Descrição<p-sortIcon field="descricao"></p-sortIcon></th>
+            
+          </tr>
+        </ng-template>
+  
+        <ng-template pTemplate="body" let-selectedRecord>
+          <tr>
+             <td class="table-id">
+              <button pButton pRipple
+                pTooltip="Edita dados do Politica"
+                tooltipPosition="top"
+                icon="pi pi-pencil"
+                class="p-button-sm p-button-rounded p-button-outlined p-button-info mr-1"
+                (click)="editOnClick(selectedRecord)">
+              </button>
+  
+            </td>
+            <td class="table-15" >{{selectedRecord.nome}}</td>
+            <td>{{selectedRecord.descricao}}</td>
+           
+          </tr>
+        </ng-template>
+  
+  
+      </p-table>
+    </p-panel>
+  
+  </section>
+  
+  <status-form
+    [formData]="selectedRecord"
+    (afterSave)="loadRecordList()">
+  </status-form>
+  

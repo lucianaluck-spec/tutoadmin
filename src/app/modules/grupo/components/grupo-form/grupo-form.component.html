@@ -1,0 +1,103 @@
+<p-dialog header={{title}} styleClass="p-fluid" [breakpoints]="{'960px': '75vw', '640px': '100vw'}"
+    [style]="{width: '50vw'}" [maximizable]="true" [modal]="true" [(visible)]="formVisible">
+
+    <ng-template pTemplate="content">
+        <p-tabView>
+            <p-tabPanel header="Dados Gerais">
+                <form [formGroup]="form">
+
+                    <div class="p-field" *ngIf="editing">
+                        <label for="id">ID</label>
+                        <input type="text" formControlName="id" pInputText id="id" disabled="true" />
+                    </div>
+
+                    <div class="p-field">
+                        <label for="descricao">Descrição</label>
+                        <input id="nome" type="text" formControlName="descricao" pInputText id="descricao" required
+                            autofocus enterToTab
+                            [ngStyle]="{'border-color': submitted && form.controls.descricao.errors ? 'red' : ''}" />
+                        <small class="p-invalid" style="color: red"
+                            *ngIf="submitted && !form.controls.descricao.value">campo
+                            obrigatório</small>
+                    </div>
+                    <div class="p-field">
+                        <label for="geracao">Geração:</label>
+                        <input type="text" formControlName="geracao" 
+                            pInputText id="geracao" required autofocus enterToTab
+                            [ngStyle]="{'border-color': submitted && form.controls.geracao.errors ? 'red' : ''}" />
+                        <small class="p-invalid" style="color: red"
+                            *ngIf="submitted && form.controls.geracao.value === ''">campo
+                            obrigatório</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3">
+                            <button pButton pRipple label="Salvar" icon="pi pi-check" (click)="saveOnClick()"
+                                class="p-button-sm">
+                            </button>
+
+                        </div>
+                        <div class="col-3">
+
+                            <button pButton pRipple label="Cancelar" icon="pi pi-times"
+                                class="p-button-sm p-button-secondary" (click)="cancelOnClick()">
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </p-tabPanel>
+
+            <p-tabPanel header="Imagens " *ngIf="editing == true">
+                <p-panel header="{{initialFormData.descricao}}">
+                    <p-galleria [(value)]="images" [responsiveOptions]="responsiveOptions"
+                        [containerStyle]="{ 'max-width': '640px' }" [numVisible]="7" [circular]="true">
+                        <ng-template pTemplate="item" let-item>
+                            <div class="border-1 surface-border border-round m-2 p-3">
+                                <div class="mb-3">
+                                    <img [src]="item.previewImageSrc" [alt]="item.descricao" [title]="item.descricao"
+                                        style="width: 100%; height:300px; display: block;" />
+                                </div>
+                                <div class="mb-3">
+                                    <div class="relative mx-auto">
+                                        <div class="mb-6 font-medium">
+                                            {{ item.descricao }}
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="mb-3 font-medium">
+                                    <button pButton pRipple label="Excluir" icon="pi pi-times"
+                                        class="p-button-sm p-button-secondary" (click)="excluiImagem(item.origem)">
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="thumbnail" let-item>
+                            <img [src]="item.thumbnailImageSrc" style="width: 25%; height:25%; display: block;" />
+                        </ng-template>
+                    </p-galleria>
+
+                    <p-panel
+                        header="Para adicionar uma Imagem, digite uma descrição(identificando as pessoas da esquerda pra direita) e depois escolha a imagem">
+                        <div class="p-field">
+
+                            <textarea type="text" [(ngModel)]="descricaoImagem" pInputTextarea autofocus rows="3" style="-webkit-box-sizing: border-box;
+                               -moz-box-sizing: border-box;
+                               box-sizing: border-box;
+                           
+                               width: 100%;"></textarea>
+                        </div>
+
+                        <p-fileUpload mode="basic" name="demo[]" chooseIcon="pi pi-upload"
+                            url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="2000000"
+                            (onUpload)="onUpload($event)" chooseLabel="Adicionar" [auto]="true">
+                        </p-fileUpload>
+                    </p-panel>
+                </p-panel>
+            </p-tabPanel>
+        </p-tabView>
+    </ng-template>
+
+</p-dialog>

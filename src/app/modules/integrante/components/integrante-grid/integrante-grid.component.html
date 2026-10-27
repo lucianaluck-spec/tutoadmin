@@ -1,0 +1,145 @@
+<section class="content-header">
+
+  <p-panel header="Cadastro de Integrantes/Candidatos">
+
+    <p-toolbar styleClass="mb-4">
+
+      <ng-template pTemplate="left">
+        <p-dropdown id="idGrupo" [(ngModel)]="idGrupo" placeholder="Grupos" optionValue="id"
+          optionLabel="descricao" [showClear]="true" [options]="grupos" (onChange)="onChange($event)">
+        </p-dropdown>
+
+        <p-dropdown id="idAncestral" [(ngModel)]="idAncestral" placeholder="Ancestral" optionValue="id"
+          optionLabel="nomeAtual" [showClear]="true" [options]="ancestrais" (onChange)="onChangeAncestral($event)">
+        </p-dropdown>
+
+        <p-dropdown id="status" [(ngModel)]="idStatus" placeholder="Status" optionValue="id"
+          optionLabel="nome" [showClear]="true" [options]="todosStatus" (onChange)="onChange($event)">
+        </p-dropdown>
+
+         <p-dropdown id="aceito"  [(ngModel)]="aceito" [options]="aceitoOptions" 
+         placeholder="TODOS"
+                            optionValue="code" optionLabel="name" [showClear]="false" [filter]="true"
+                            filterBy="name,code" enterToTab>
+                        </p-dropdown>
+        
+      </ng-template>
+
+      <ng-template pTemplate="right">
+        <button pButton pRipple label="" pTooltip="cria um novo registro" tooltipPosition="top" icon="pi pi-plus"
+          class="p-button-sm p-button-success mr-1" (click)="createOnClick()">
+        </button>
+
+        <button pButton pRipple label="" pTooltip="exclui os registros selecionados" tooltipPosition="top"
+          icon="pi pi-trash" class="p-button-sm p-button-danger mr-1"
+          [disabled]="!selectedRecords || !selectedRecords.length" (click)="deleteBulkOnClick()">
+        </button>
+
+        <button pButton pRipple label="" pTooltip="atualiza a lista de registros" tooltipPosition="top"
+          icon="pi pi-refresh" class="p-button-sm p-button-info" (click)="refreshOnClick()">
+        </button>
+
+        <button pButton pRipple label="" pTooltip="Prepara consulta para Impressão" tooltipPosition="top"
+          icon="pi pi-print" class="p-button-sm p-button-secondary" onclick="window.print();">
+        </button>
+      </ng-template>
+
+    </p-toolbar>
+
+    <p-table #dt dataKey="id" 
+      [value]="records"
+      [lazy]="true" 
+      [(selection)]="selectedRecords"
+      (onLazyLoad)="onLazyLoad($event)"
+      [paginator]="true" 
+      [rows]="rows" 
+      [totalRecords]="totalRecords"
+      [loading]="loading" 
+      [rowsPerPageOptions]="[10, 20, 50, 100]" 
+      sortMode="multiple" 
+      [scrollable]="true"
+      scrollHeight="400px" 
+      [resizableColumns]="true" 
+      [responsive]="true" 
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm p-datatable-gridlines" 
+      [showCurrentPageReport]="true"
+      [multiSortMeta]="[{field: 'nomeAtual', order: 1}]"
+      currentPageReportTemplate="Listando {first} a {last} de {totalRecords} registros">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pResizableColumn class="table-check-selected">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th class="table-acoes">Ações</th>
+          <th pResizableColumn pSortableColumn="nomeAtual">Nome<p-sortIcon field="nomeAtual"></p-sortIcon></th>
+          <th pResizableColumn>Ancestral(Pai)</th>
+          <th pResizableColumn class="table-acoes" pSortableColumn="dataNascimento">Data Nascto<p-sortIcon field="dataNascto"></p-sortIcon>
+          </th>
+
+          <th class="table-acoes">Status</th>
+          <th class="table-acoes" pResizableColumn>Grupo</th>
+          <th pResizableColumn class="table-acoes">Nro</th>
+
+        </tr>
+        <tr>
+          <th class="table-check-selected"></th>
+          <th class="table-acoes"></th>
+          <th>
+            <p-columnFilter type="text" field="nomeAtual" [showMenu]="false"
+              (input)="dt.filter($event.target.value, 'nomeAtual', 'contains')">
+            </p-columnFilter>
+          </th>
+         
+          <th></th>
+          <th class="table-acoes"></th>
+          <th class="table-acoes"></th>
+          <th class="table-acoes"></th>
+          <th class="table-acoes"></th>
+
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-selectedRecord>
+        <tr>
+          <td class="table-check-selected">
+            <p-tableCheckbox [value]="selectedRecord"></p-tableCheckbox>
+          </td>
+          <td class="table-acoes">
+            <button pButton pRipple pTooltip="Edita Dados dos Integrante" tooltipPosition="top" icon="pi pi-pencil"
+              class="p-button-sm p-button-rounded p-button-outlined p-button-info mr-1"
+              (click)="editOnClick(selectedRecord)">
+            </button>
+
+            <button pButton pRipple pTooltip="Exclui Registro" tooltipPosition="top" icon="pi pi-trash"
+              class="p-button-sm p-button-rounded p-button-outlined p-button-danger"
+              (click)="deleteOnClick(selectedRecord)">
+            </button>
+
+          </td>
+
+          <td>{{selectedRecord.nomeAtual}}</td>
+         
+          <td>{{selectedRecord.nomeAncestral}}</td>
+          <td class="table-acoes">{{selectedRecord.dataNascimento | date: 'dd/MM/YYYY'}}</td>
+          <td class="table-acoes">{{selectedRecord.nameStatus}}</td>
+          <td class="table-acoes">{{selectedRecord.nomeGrupo}}</td>
+          <td class="table-acoes">{{selectedRecord.nroCadastro}}</td>
+
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="summary">
+        <div class="p-d-flex p-ai-center p-jc-between">
+          Total de registros: {{records ? records.length : 0 }}
+        </div>
+      </ng-template>
+
+    </p-table>
+  </p-panel>
+
+</section>
+
+<integrante-form [formData]="selectedRecord" (afterSave)="loadRecordList()">
+</integrante-form>

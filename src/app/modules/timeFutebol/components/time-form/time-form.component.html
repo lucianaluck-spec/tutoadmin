@@ -1,0 +1,37 @@
+<p-dialog header={{title}} styleClass="p-fluid" [breakpoints]="{'960px': '75vw', '640px': '100vw'}"
+    [style]="{width: '50vw'}" [maximizable]="true" [modal]="true" [(visible)]="formVisible">
+
+    <ng-template pTemplate="content">
+
+        <form [formGroup]="form">
+
+            <div class="p-field" *ngIf="editing">
+                <label for="id">ID</label>
+                <input type="text" formControlName="id" pInputText id="id" disabled="true" />
+            </div>
+
+            <div class="p-field">
+                <label for="nome">Nome</label>
+                <input id="nome" type="text" formControlName="nome" pInputText id="nome" required autofocus
+                    [ngStyle]="{'border-color': submitted && form.controls.nome.errors ? 'red' : ''}" />
+                <small class="p-invalid" style="color: red" *ngIf="submitted && !form.controls.nome.value">campo
+                    obrigatório</small>
+            </div>
+            <div class="p-field">
+                <label for="estado">Estado</label>
+               <input id="estado" type="text" formControlName="estado" pInputText id="estado" autofocus
+                     />
+            </div>
+            
+        </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Salvar" icon="pi pi-check" (click)="saveOnClick()" class="p-button-sm">
+        </button>
+
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-sm p-button-secondary"
+            (click)="cancelOnClick()">
+        </button>
+    </ng-template>
+</p-dialog>

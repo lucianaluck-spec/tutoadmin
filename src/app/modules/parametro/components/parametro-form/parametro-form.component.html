@@ -1,0 +1,68 @@
+<section class="content-header">
+
+    <p-panel header="Parametros da Familia">
+        <ng-template pTemplate="content">
+
+            <form [formGroup]="form">
+
+                <div class="p-field">
+                    <label for="nomeFamilia">Nome Familia:</label><br>
+                    <input id="nomeFamilia" type="text" formControlName="nomeFamilia" pInputText required autofocus
+                        enterToTab
+                        [ngStyle]="{'border-color': submitted && form.controls.nomeFamilia.errors ? 'red' : ''}" />
+                    <small class="p-invalid" style="color: red"
+                        *ngIf="submitted && !form.controls.nomeFamilia.value">campo obrigatório</small>
+                </div>
+
+                <div class="p-field">
+                    <label for="local">Local Origem:</label><br>
+                    <input id="local" type="text" formControlName="localOrigem" pInputText required autofocus enterToTab
+                        [ngStyle]="{'border-color': submitted && form.controls.localOrigem.errors ? 'red' : ''}" />
+                    <small class="p-invalid" style="color: red"
+                        *ngIf="submitted && !form.controls.localOrigem.value">campo obrigatório</small>
+                </div>
+
+                <div class="p-field">
+                    <label for="possivelChegada">Possivel Chegada:</label><br>
+                    <input id="possivelChegada" type="text" formControlName="possivelChegada" pInputText required
+                        autofocus enterToTab
+                        [ngStyle]="{'border-color': submitted && form.controls.possivelChegada.errors ? 'red' : ''}" />
+                    <small class="p-invalid" style="color: red"
+                        *ngIf="submitted && !form.controls.possivelChegada.value">campo obrigatório</small>
+                </div>
+
+                <div class="p-field">
+                    <label for="resumoFamilia">Resumo Familia:</label><br>
+                    <textarea id="resumoFamilia" type="text" formControlName="resumoFamilia" pInputTextarea autofocus
+                        rows="5" cols="50"
+                        [ngStyle]="{'border-color': submitted && form.controls.resumoFamilia.errors ? 'red' : ''}">
+                        </textarea>
+                    <small class="p-invalid" style="color: red"
+                        *ngIf="submitted && !form.controls.resumoFamilia.value">campo obrigatório</small>
+                </div>
+
+                <div class="p-field">
+                    <label for="msgAceito">Mensagem Aceitação:</label><br>
+                    <textarea id="msgAceito" type="text" formControlName="msgAceito" pInputTextarea autofocus rows="5"
+                         cols="50">
+                        </textarea>
+
+                </div>
+                <div class="p-field">
+                    <label for="msgCancelamento">Mensagem Cancelamentro:</label><br>
+                    <textarea id="msgCancelamento" type="text" formControlName="msgCancelamento" pInputTextarea autofocus rows="5"
+                         cols="50">
+                        </textarea>
+                </div>
+
+
+            </form>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button pButton pRipple label="Salvar" icon="pi pi-check" (click)="saveOnClick()" class="p-button-sm">
+            </button>
+
+        </ng-template>
+    </p-panel>
+</section>

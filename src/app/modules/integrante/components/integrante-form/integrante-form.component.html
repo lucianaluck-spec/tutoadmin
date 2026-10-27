@@ -1,0 +1,852 @@
+<p-dialog header={{title}} styleClass="p-fluid" [breakpoints]="{'960px': '75vw', '640px': '100vw'}"
+    [style]="{width: '50vw'}" [closeOnEscape]="false" [maximizable]="true" [modal]="true" [(visible)]="formVisible">
+
+    <ng-template pTemplate="content">
+        <p-tabView>
+            <p-tabPanel header="Dados Gerais">
+                <form [formGroup]="form">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="p-field" *ngIf="editing">
+                                <label for="id">ID</label>
+                                <input type="text" formControlName="id" pInputText id="id" disabled="true" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-field" *ngIf="editing">
+                                <label for="nroCadastro">Código</label>
+                                <input type="text" formControlName="nroCadastro" pInputText id="nroCadastro"
+                                    disabled="true" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-field" *ngIf="editing">
+                                <label for="sequencia">Sequencia</label>
+                                <input type="text" formControlName="sequencia" pInputText id="sequencia"
+                                    disabled="true" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <p-panel header="Avatar" class="card flex justify-content-center">
+                        <div class="row">
+                            <div class="col-2" style="text-align: center;">
+                                <img [src]="imgRecourse" width="80px" />
+
+                            </div>
+                            <div class="col-4">
+                                <p-fileUpload mode="basic" name="demo[]" chooseIcon="pi pi-upload"
+                                    url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*"
+                                    maxFileSize="1000000" (onUpload)="onUpload($event)" chooseLabel="Próprio"
+                                    [auto]="true">
+                                </p-fileUpload>
+                                <button pButton pRipple pTooltip="Apaga a Foto" tooltipPosition="top"
+                                    icon="pi pi-eye-slash"
+                                    *ngIf="editing && imgRecourse !== '/assets/img/default-profile.png'"
+                                    class="p-button-sm p-button-rounded p-button-outlined p-button-danger"
+                                    (click)="excluiFoto()">
+                                </button>
+
+                            </div>
+                            <div class="col-2" style="text-align: center;">
+                                <img [src]="imgRecourseConjuge" width="80px" />
+                            </div>
+
+                            <div class="col-4">
+                                <p-fileUpload mode="basic" name="demo2[]" chooseIcon="pi pi-upload"
+                                    url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*"
+                                    maxFileSize="1000000" (onUpload)="onUploadConjuge($event)" chooseLabel="Conjuge"
+                                    [auto]="true">
+                                </p-fileUpload>
+                                <button pButton pRipple pTooltip="Apaga a Foto Conjuge" tooltipPosition="top"
+                                    icon="pi pi-eye-slash"
+                                    *ngIf="editing && imgRecourseConjuge !== '/assets/img/default-profile.png'"
+                                    class="p-button-sm p-button-rounded p-button-outlined p-button-danger"
+                                    (click)="excluiFotoConjuge()">
+                                </button>
+
+                            </div>
+                        </div>
+                    </p-panel>
+                    <div class="p-field">
+                        <label for="nomeAtual">Nome Atual</label>
+                        <input id="nomeAtual" type="text" formControlName="nomeAtual" pInputText required
+                            class="to-upper-case" autofocus enterToTab
+                            [ngStyle]="{'border-color': submitted && form.controls.nomeAtual.errors ? 'red' : ''}" />
+                        <small class="p-invalid" style="color: red"
+                            *ngIf="submitted && !form.controls.nomeAtual.value">campo
+                            obrigatório</small>
+                    </div>
+                    <div class="p-field">
+                        <label for="nomeSolteiro">Nome Solteiro</label>
+                        <input id="nomeSolteiro" type="text" formControlName="nomeSolteiro" pInputText
+                            class="to-upper-case" autofocus enterToTab />
+                    </div>
+
+                    <div class="p-field">
+                        <label for="conjugeAtual">Conjuge</label>
+                        <input id="conjugeAtual" type="text" formControlName="nomeConjugeAtual" pInputText
+                            class="to-upper-case" autofocus (keydown.enter)="focusNext($event)" />
+
+                    </div>
+                    <div class="p-field">
+                        <label for="idGrupo">Geração</label>
+                        <p-dropdown id="idGrupo" formControlName="idGrupo" optionValue="id" optionLabel="descricao"
+                            [options]="grupos" placeholder="Selecione" [showClear]="true" (click)="buscaAncestrais()"
+                            enterToTab (onBlur)="onChangeAncestral()">
+                        </p-dropdown>
+
+                    </div>
+                    <div class="p-field">
+                        <label for="idAncestral">Ancestral</label>
+                        <p-dropdown #ancestralDrop id="idAncestral" formControlName="idAncestral" optionValue="id"
+                            optionLabel="nomeCodigo" [options]="ancestrais" placeholder="Selecione" [showClear]="true"
+                            [filter]="true" filterBy="nomeCodigo" enterToTab (click)="onChangeAncestral()"
+                            (onBlur)="onChangeAncestral()">
+                        </p-dropdown>
+
+                    </div>
+
+                    <div class="p-field" *ngIf="empesquisa">
+                        <label for="nome1Ancestral">1o Ancestral</label>
+                        <input id="nome1Ancestral" type="text" formControlName="nome1Ancestral" pInputText
+                            class="to-upper-case" autofocus enterToTab placeholder="Pai ou Mãe" />
+
+                    </div>
+                    <div class="p-field" *ngIf="empesquisa">
+                        <label for="nome2Ancestral">2o Ancestral</label>
+                        <input id="nome2Ancestral" type="text" formControlName="nome2Ancestral" pInputText
+                            class="to-upper-case" autofocus enterToTab placeholder="Avô ou Avó" />
+
+                    </div>
+                    <div class="p-field">
+                        <label for="dataNascimento">Data Nascimento</label>
+                        <input pInputText id="dataNascimento" formControlName="dataNascimento" type="date"
+                            (blur)="buscaSigno()" (keydown.enter)="focusNext($event)" />
+
+                    </div>
+                    <div class="p-field">
+                        <label for="signo">Signo</label>
+                        <p-dropdown id="signo" formControlName="idSigno" optionValue="id" [filter]="true"
+                            filterBy="nome" optionLabel="nome" [options]="signos" placeholder="Selecione"
+                            [showClear]="true" readonly="true" enterToTab>
+
+                        </p-dropdown>
+                    </div>
+
+                    <div class="p-field">
+                        <label for="dataFalecimento">Data Falecimento</label>
+                        <input pInputText id="dataFalecimento" formControlName="dataFalecimento" type="date"
+                            (keydown.enter)="focusNext($event)" />
+
+                    </div>
+
+                    <div class="p-field">
+                        <label for="sexo">Sexo</label>
+                        <p-dropdown id="sexo" formControlName="sexo" [options]="sexoOptions" placeholder="Selecione"
+                            optionValue="code" optionLabel="name" [showClear]="true" [filter]="true"
+                            filterBy="name,code" enterToTab>
+                        </p-dropdown>
+
+                    </div>
+                    <label for="telefone">Telefone</label>
+                    <p-inputMask pInputText mask="(99) 99999-9999" id="telefone" formControlName="telefone"
+                        (keydown.enter)="focusNext($event)">
+                    </p-inputMask>
+
+                    <div class="p-field">
+                        <label for="email">Email</label>
+                        <input pInputText email id="email" type="text" formControlName="email" enterToTab />
+
+                    </div>
+                    <div class="p-field">
+                        <label for="conjugeAnterior">Conjuge Anterior</label>
+                        <input id="conjugeAnterior" type="text" formControlName="nomeConjugeAnterior" pInputText
+                            class="to-upper-case" autofocus (keydown.enter)="focusNext($event)" />
+
+                    </div>
+
+                    <p-panel header="Localização Atual">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="p-field">
+                                    <label for="pais">País</label>
+                                    <input id="pais" type="text" formControlName="pais" pInputText class="to-upper-case"
+                                        autofocus (blur)="loadEstados(1)" (keydown.enter)="focusNext($event)" />
+
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-field">
+                                    <label for="estado">Estado</label>
+
+                                    <p-dropdown #estadoDrop id="estado" formControlName="estado" [options]="estados"
+                                        placeholder="Selecione" [showClear]="true" (onChange)="loadLocalizacoes(1)"
+                                        enterToTab>
+                                    </p-dropdown>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-field">
+
+                            <label for="idLocalizacaoAtual">Local:</label>
+                            <div class="p-inputgroup">
+                                <p-dropdown id="idLocalizacaoAtual" formControlName="idLocalizacaoAtual"
+                                    optionValue="id" optionLabel="nomeEstadoPais" [options]="localizacoes"
+                                    placeholder="Selecione" [showClear]="true" [filter]="true"
+                                    filterBy="nomeEstadoPais">
+                                </p-dropdown>
+                                <button pButton pRipple icon="pi pi-plus-circle" (click)="incluiLocalizacaoOnClick(1)"
+                                    class="p-button-sm mr-1">
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </p-panel>
+
+                    <p-panel header="Localização Origem">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="p-field">
+                                    <label for="paisOrigem">País</label>
+                                    <input id="paisOrigem" type="text" formControlName="paisOrigem" pInputText
+                                        class="to-upper-case" (blur)="loadEstados(2)" autofocus="true"
+                                        (keydown.enter)="focusNext($event)" />
+
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-field">
+                                    <label for="estadoOrigem">Estado</label>
+                                    <p-dropdown id="estadoOrigem" formControlName="estadoOrigem"
+                                        [options]="estadosOrigem" placeholder="Selecione" [showClear]="true"
+                                        (onChange)="loadLocalizacoes(2)" autofocus="true">
+                                    </p-dropdown>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-field">
+                            <label for="idLocalizacaoOrigem">Local:</label>
+                            <div class="p-inputgroup">
+                                <p-dropdown id="idLocalizacaoOrigem" formControlName="idLocalizacaoOrigem"
+                                    optionValue="id" optionLabel="nomeEstadoPais" [options]="localizacoesOrigem"
+                                    placeholder="Selecione" [showClear]="true" [filter]="true"
+                                    filterBy="nomeEstadoPais">
+                                </p-dropdown>
+                                <button pButton pRipple icon="pi pi-plus-circle" (click)="incluiLocalizacaoOnClick(2)"
+                                    class="p-button-sm mr-1">
+                                </button>
+
+                            </div>
+                        </div>
+                    </p-panel>
+
+
+
+                    <div class="p-field">
+                        <label for="idProfissao">Profissão</label>
+                        <div class="p-inputgroup">
+
+
+                            <p-dropdown id="idProfissao" formControlName="idProfissao" optionValue="id"
+                                optionLabel="descricao" [options]="profissoes" placeholder="Selecione"
+                                [showClear]="true" variant="filled" readonly>
+                            </p-dropdown>
+
+                            <button pButton pRipple icon="pi pi-info-circle"
+                                (click)="viewIntroducaoOnClick('PROFISSAO')" class="p-button-sm mr-1">
+                            </button>
+
+                            <button pButton pRipple icon="pi pi-filter" (click)="filterProfissaoOnClick()"
+                                class="p-button-sm mr-1">
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="p-field">
+                        <label for="religiao">Religião</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="religiao" formControlName="idReligiao" optionValue="id" optionLabel="nome"
+                                [options]="religioes" placeholder="Selecione" [showClear]="true" [filter]="true"
+                                filterBy="nome" enterToTab>
+                            </p-dropdown>
+                            <button pButton pRipple icon="pi pi-info-circle" (click)="viewIntroducaoOnClick('RELIGIAO')"
+                                class="p-button-sm mr-1">
+                            </button>
+                            <button pButton pRipple icon="pi pi-filter" (click)="viewInformacaoOnClick('RELIGIAO')"
+                                class="p-button-sm mr-1">
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="p-field">
+                        <label for="politica">Ideologia Politica</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="politica" formControlName="idPolitica" optionValue="id"
+                                optionLabel="descricao" [options]="politicas" [filter]="true" filterBy="descricao"
+                                placeholder="Selecione" [showClear]="true" enterToTab>
+                            </p-dropdown>
+                            <button pButton pRipple icon="pi pi-info-circle" (click)="viewIntroducaoOnClick('POLITICA')"
+                                class="p-button-sm mr-1">
+                            </button>
+                            <button pButton pRipple icon="pi pi-filter" (click)="viewInformacaoOnClick('POLITICA')"
+                                class="p-button-sm mr-1">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-field">
+                        <label for="time">Time de Futebol</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="time" formControlName="idTimeFutebol" optionValue="id" [filter]="true"
+                                filterBy="nomeEstado" optionLabel="nomeEstado" [options]="timesFutebol"
+                                placeholder="Selecione" [showClear]="true" enterToTab>
+                            </p-dropdown>
+
+                            <button pButton pRipple icon="pi pi-info-circle" (click)="viewIntroducaoOnClick('TIME')"
+                                class="p-button-sm mr-1">
+                            </button>
+
+                            <button pButton pRipple icon="pi pi-filter" (click)="viewInformacaoOnClick('TIME')"
+                                class="p-button-sm mr-1">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-field">
+                        <label for="estilo">Genero Musical</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="estilo" formControlName="idEstiloMusical" optionValue="id" [filter]="true"
+                                filterBy="nome" optionLabel="nome" [options]="estilosMusicais" placeholder="Selecione"
+                                [showClear]="true" enterToTab>
+                            </p-dropdown>
+
+                            <button pButton pRipple icon="pi pi-info-circle" (click)="viewIntroducaoOnClick('Genero')"
+                                class="p-button-sm mr-1">
+                            </button>
+
+                            <button pButton pRipple icon="pi pi-filter"
+                                (click)="viewInformacaoOnClick('GENERO_MUSICAL')" class="p-button-sm mr-1">
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="p-field">
+                        <label for="temperamento">Temperamento</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="temperamento" formControlName="idTemperamento" optionValue="id"
+                                [filter]="true" filterBy="descricao" optionLabel="descricao" [filter]="true"
+                                filterBy="descricao" [options]="temperamentos" placeholder="Selecione"
+                                [showClear]="true" enterToTab>
+
+                            </p-dropdown>
+                            <button pButton pRipple icon="pi pi-info-circle"
+                                (click)="viewIntroducaoOnClick('TEMPERAMENTO')" class="p-button-sm mr-1">
+                            </button>
+
+                            <button pButton pRipple icon="pi pi-filter" (click)="viewInformacaoOnClick('TEMPERAMENTO')"
+                                class="p-button-sm mr-1">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-field">
+                        <label for="habitoAlimentar">Habito Alimentar</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="habitoAlimentar" formControlName="idHabitoAlimentar" optionValue="id"
+                                [filter]="true" filterBy="descricao" optionLabel="descricao" [filter]="true"
+                                filterBy="descricao" [options]="habitosAlimentar" placeholder="Selecione"
+                                [showClear]="true" autoShowPanelOnPrintableCharacterKeyDown="false">
+
+                            </p-dropdown>
+                            <button pButton pRipple icon="pi pi-info-circle"
+                                (click)="viewIntroducaoOnClick('HABITO_ALIMENTAR')" class="p-button-sm mr-1">
+                            </button>
+                            <button pButton pRipple icon="pi pi-filter"
+                                (click)="viewInformacaoOnClick('HABITO_ALIMENTAR')" class="p-button-sm mr-1">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-field">
+                        <label for="habitoAlimentar">Tipo Sanguineo</label>
+                        <div class="p-inputgroup">
+                            <p-dropdown id="tipoSanguineo" formControlName="idTipoSanguineo" optionValue="id"
+                                [filter]="true" filterBy="descricao" optionLabel="descricao" [filter]="true"
+                                filterBy="descricao" [options]="tiposSanguineo" placeholder="Selecione"
+                                [showClear]="true" autoShowPanelOnPrintableCharacterKeyDown="false">
+
+                            </p-dropdown>
+                            <button pButton pRipple icon="pi pi-info-circle"
+                                (click)="viewIntroducaoOnClick('TIPO_SANGUINEO')" class="p-button-sm mr-1">
+                            </button>
+                            <button pButton pRipple icon="pi pi-filter"
+                                (click)="viewInformacaoOnClick('TIPO_SANGUINEO')" class="p-button-sm mr-1">
+                            </button>
+                        </div>
+                    </div>
+
+                    <p-panel header="Dados de Sistema">
+                        <div class="row">
+                           
+                            <div class="col-6">
+
+                                <label>Data Cadastro: </label>
+                                <input pInputText formControlName="dataCadastro" type="date" disabled="true" />
+                            </div>
+                            <div class="col-6">
+                                <div class="p-field" *ngIf="editing">
+                                    <label fo0r="status">Status</label>
+                                    <p-dropdown id="status" formControlName="idStatus" placeholder="Status"
+                                        optionValue="id" optionLabel="nome" [showClear]="true" [options]="todosStatus"
+                                        (onChange)="onChangeStatus($event)">
+                                    </p-dropdown>
+
+                                </div>
+                            </div>
+                             <div class="col-12">
+
+                                <label>Aceito: </label>
+                                <p-checkbox formControlName="aceito" [binary]="true" inputId="binary">
+
+                                </p-checkbox>
+                            </div>
+
+                        </div>
+                    </p-panel>
+                    <div class="p-field" *ngIf="cancelado">
+                        <label for="motivoCancelamento">Motivo Cancelamento:</label>
+                        <textarea id="motivoCancelamento" type="text" formControlName="motivoCancelamento"
+                            pInputTextarea autofocus rows="5" cols="50">
+                        </textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+
+                            <button pButton pRipple label="Salvar" icon="pi pi-check" (click)="saveOnClick()"
+                                class="p-button-sm">
+                            </button>
+
+                        </div>
+                        <div class="col-3">
+
+                            <button pButton pRipple label="Cancelar" icon="pi pi-times"
+                                class="p-button-sm p-button-secondary" (click)="cancelOnClick()">
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </p-tabPanel>
+
+            <p-tabPanel header="Imagens" *ngIf="editing == true">
+                <p-toolbar styleClass="mb-4">
+                    <ng-template pTemplate="left">
+                        <p class="m-0">
+                            {{initialFormData.nomeAtual}}
+                        </p>
+                    </ng-template>
+                    <ng-template pTemplate="right">
+                        <button pButton pRipple label="refresh" icon="pi pi-times"
+                            class="p-button-sm p-button-secondary" (click)="viewImages()">
+                        </button>
+                    </ng-template>
+
+                </p-toolbar>
+
+                <div class="card">
+
+
+                    <div *ngFor="let img of images">
+                        <div class="border-1 surface-border border-round m-2 p-3">
+                            <img [src]="img.previewImageSrc" [alt]="img.descricao" class="w-full rounded" style=" width: 300px; /* Largura fixa */
+                                                                      height: 200px; /* Altura fixa */
+                                                                      object-fit: cover; /* Corta a imagem para preencher sem distorcer */
+                                                                      border: 2px solid #ccc; " />
+                        </div>
+                        <p-toolbar styleClass="mb-4">
+                            <ng-template pTemplate="left">
+                                <p class="m-0">
+                                    {{img.descricao}}
+                                </p>
+                            </ng-template>
+                            <ng-template pTemplate="right">
+                                <button pButton pRipple label="Excluir" icon="pi pi-times"
+                                    class="p-button-sm p-button-secondary" (click)="excluiImagem(img.id)">
+                                </button>
+                            </ng-template>
+
+                        </p-toolbar>
+
+
+                    </div>
+
+                    <p-panel
+                        header="Para adicionar uma Imagem, digite uma descrição(identificando as pessoas da esquerda pra direita) e depois escolha a imagem">
+                        <div class="p-field">
+
+                            <textarea type="text" [(ngModel)]="descricaoImagem" pInputTextarea autofocus rows="3" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;"></textarea>
+                        </div>
+
+                        <p-fileUpload mode="basic" name="demo3[]" chooseIcon="pi pi-upload"
+                            url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*,application/pdf"
+                            maxFileSize="2000000" (onUpload)="onUploadImage($event)" chooseLabel="Adicionar"
+                            [auto]="true">
+                        </p-fileUpload>
+                    </p-panel>
+                </div>
+            </p-tabPanel>
+
+            <p-tabPanel header="PDF's" *ngIf="editing == true">
+                <p-toolbar styleClass="mb-4">
+                    <ng-template pTemplate="left">
+                        <p class="m-0">
+                            {{initialFormData.nomeAtual}}
+                        </p>
+                    </ng-template>
+                    <ng-template pTemplate="right">
+                        <button pButton pRipple label="refresh" icon="pi pi-times"
+                            class="p-button-sm p-button-secondary" (click)="viewDoctos()">
+                        </button>
+                    </ng-template>
+
+                </p-toolbar>
+
+                <div *ngFor="let item of doctos">
+                    <iframe [src]="item.thumbnailImageSrc" width="100%" height="600px">
+
+                    </iframe>
+                    <p-toolbar styleClass="mb-4">
+                        <ng-template pTemplate="left">
+                            <p class="m-0">
+                                {{item.descricao}}
+                            </p>
+                        </ng-template>
+                        <ng-template pTemplate="right">
+                            <button pButton pRipple label="Excluir" icon="pi pi-times"
+                                class="p-button-sm p-button-secondary" (click)="excluiImagem(item.id)">
+                            </button>
+                        </ng-template>
+
+                    </p-toolbar>
+
+                </div>
+
+                <p-panel header="Para adicionar um PDF, digite uma descrição(identificando o documento)">
+                    <div class="p-field">
+
+                        <textarea type="text" [(ngModel)]="descricaoDocto" pInputTextarea autofocus rows="3" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;"></textarea>
+                    </div>
+
+                    <p-fileUpload mode="basic" name="demo3[]" chooseIcon="pi pi-upload"
+                        url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*,application/pdf"
+                        maxFileSize="2000000" (onUpload)="onUploadDocto($event)" chooseLabel="Adicionar" [auto]="true">
+                    </p-fileUpload>
+                </p-panel>
+            </p-tabPanel>
+        </p-tabView>
+    </ng-template>
+
+</p-dialog>
+
+<!--  Dialog de Introducao -->
+<p-dialog styleClass="p-fluid" [breakpoints]="{'860px': '75vw', '540px': '100vw'}" [style]="{width: '100vw'}"
+    [maximizable]="true" [modal]="true" [(visible)]="introducaoVisible">
+    <div class="row">
+        <div class="col-4">
+            <label>Tema:</label>
+        </div>
+        <div class="col-8">
+            <label>{{introducao.tema}}</label>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-12">
+
+            <textarea type="text" [(ngModel)]="introducao.explicacao" pInputTextarea autofocus rows="10" cols="150"
+                style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;" disabled="true"></textarea>
+        </div>
+    </div>
+</p-dialog>
+
+<!--  Dialog de Profissoes -->
+<p-dialog header="Pesquisar Profissões" styleClass="p-fluid" [breakpoints]="{'760px': '75vw', '540px': '100vw'}"
+    [style]="{width: '100vw'}" [maximizable]="true" [modal]="true" [(visible)]="filtroProfissaoVisible">
+    <p-panel header="Informação">
+        <div class="card">
+
+            <textarea type="text" [(ngModel)]="introducao.explicacao" pInputTextarea autofocus rows="3" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;" disabled="true"></textarea>
+        </div>
+        <p-table #dtProfissao dataKey="id" [value]="profissoes" [globalFilterFields]="['descricao']" [paginator]="true"
+            [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]" sortMode="multiple" [scrollable]="true"
+            [resizableColumns]="true" responsiveLayout="stack" styleClass="p-datatable-sm" [rowHover]="true"
+            [responsive]="true" currentPageReportTemplate="Listando {first} a {last} de {totalRecords} registros"
+            [showCurrentPageReport]="true">
+            <ng-template pTemplate="caption">
+                <div class="row">
+                    <div class="col-2">
+                        <p-button title="Clear" icon="pi pi-filter-slash" class="p-button-sm mr-1"
+                            (click)="clear(dtProfissao)">
+                        </p-button>
+
+                    </div>
+                    <div class="col-8">
+                        <span class="p-input-icon-left ml-auto">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" [(ngModel)]="searchProfissao"
+                                (input)="dtProfissao.filterGlobal($event.target.value, 'contains')"
+                                placeholder="palavra chave" />
+                        </span>
+                    </div>
+                    <div class="col-2">
+                        <p-button title="Novo Item" icon="pi pi-plus" class="p-button-sm mr-1"
+                            (click)="salvarNovaProfissao()">
+                        </p-button>
+
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+
+                    <th class="table-acoes">Ações</th>
+                    <th pResizableColumn class="table-id" pSortableColumn="id">Id<p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th pResizableColumn pSortableColumn="descricao">Descrição<p-sortIcon
+                            field="descricao"></p-sortIcon></th>
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-selectedRecord>
+                <tr>
+
+                    <td class="table-acoes">
+                        <button pButton pRipple icon="pi pi-download"
+                            class="p-button-rounded p-button-outlined p-button-info mr-1"
+                            (click)="captureProfissao(selectedRecord)">
+                        </button>
+
+                    </td>
+                    <td class="table-id">{{selectedRecord.id}}</td>
+                    <td>{{selectedRecord.descricao}}</td>
+
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="summary">
+                <div class="p-d-flex p-ai-center p-jc-between">
+                    Total de registros: {{profissoes ? profissoes.length : 0 }}
+                </div>
+            </ng-template>
+
+        </p-table>
+    </p-panel>
+</p-dialog>
+
+
+<!--  Dialog de Temas com campo descricao -->
+<p-dialog header="Explicação {{titleIntroducao}}" styleClass="p-fluid"
+    [breakpoints]="{'860px': '75vw', '540px': '100vw'}" [style]="{width: '1000vw'}" [maximizable]="true" [modal]="true"
+    [(visible)]="viewInformacaoDescricao">
+    <p-panel>
+        <div class="card">
+
+            <textarea type="text" [(ngModel)]="introducao.explicacao" pInputTextarea autofocus rows="3" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;" disabled="true"></textarea>
+        </div>
+        <p-table #dtInformacao1 dataKey="id" [value]="informacoes" [globalFilterFields]="['descricao', 'informacao']"
+            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]" sortMode="multiple"
+            [scrollable]="true" [resizableColumns]="true" responsiveLayout="stack" styleClass="p-datatable-sm"
+            [rowHover]="true" [responsive]="true"
+            currentPageReportTemplate="Listando {first} a {last} de {totalRecords} registros"
+            [showCurrentPageReport]="true">
+            <ng-template pTemplate="caption">
+                <div class="p-inputgroup">
+                    <span class="p-input-icon-left ml-auto">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" [(ngModel)]="searchValue"
+                            (input)="dtInformacao1.filterGlobal($event.target.value, 'contains')"
+                            placeholder="palavra chave" />
+                    </span>
+                    <p-button title="Clear" icon="pi pi-filter-slash"
+                        class="p-button-rounded p-button-outlined p-button-info mr-1"
+                        (click)="clearSearch(dtInformacao1)">
+                    </p-button>
+                </div>
+
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="table-acoes">Ações</th>
+                    <th pResizableColumn pSortableColumn="descricao">Descrição<p-sortIcon
+                            field="descricao"></p-sortIcon></th>
+                    <th pResizableColumn pSortableColumn="informacao">Informação<p-sortIcon
+                            field="descricao"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-selectedRecord>
+                <tr>
+
+                    <td class="table-acoes">
+                        <button pButton pRipple icon="pi pi-download"
+                            class="p-button-rounded p-button-outlined p-button-info mr-1"
+                            (click)="captureItem(selectedRecord)">
+                        </button>
+
+                    </td>
+                    <td>{{selectedRecord.descricao}}</td>
+                    <td>
+                        <textarea type="text" [(ngModel)]="selectedRecord.informacao" pInputTextarea autofocus rows="3"
+                            cols="100" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;" disabled="true"></textarea>
+                    </td>
+
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="summary">
+                <div class="p-d-flex p-ai-center p-jc-between">
+                    Total de registros: {{informacoes ? informacoes.length : 0 }}
+                </div>
+            </ng-template>
+
+        </p-table>
+    </p-panel>
+</p-dialog>
+
+
+<!--  Dialog de Temas com campo nome -->
+<p-dialog header="Explicação {{titleIntroducao}}" styleClass="p-fluid"
+    [breakpoints]="{'860px': '75vw', '540px': '100vw'}" [style]="{width: '50vw'}" [maximizable]="true" [modal]="true"
+    [(visible)]="viewInformacaoNome">
+    <div class="card">
+
+        <textarea type="text" [(ngModel)]="introducao.explicacao" pInputTextarea autofocus rows="3" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;" disabled="true"></textarea>
+    </div>
+    <p-table #dtInformacao2 dataKey="id" [value]="informacoes" [globalFilterFields]="['nome', 'informacao']"
+        [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]" sortMode="multiple" [scrollable]="true"
+        [resizableColumns]="true" responsiveLayout="stack" styleClass="p-datatable-sm" [rowHover]="true"
+        [responsive]="true" currentPageReportTemplate="Listando {first} a {last} de {totalRecords} registros"
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-inputgroup">
+                <span class="p-input-icon-left ml-auto">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" [(ngModel)]="searchValue"
+                        (input)="dtInformacao2.filterGlobal($event.target.value, 'contains')"
+                        placeholder="palavra chave" />
+                </span>
+                <p-button title="Clear" icon="pi pi-filter-slash"
+                    class="p-button-rounded p-button-outlined p-button-info mr-1" (click)="clearSearch(dtInformacao2)">
+                </p-button>
+
+            </div>
+
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="table-acoes">Ações</th>
+                <th pResizableColumn pSortableColumn="nome">Nome<p-sortIcon field="nome"></p-sortIcon></th>
+                <th pResizableColumn pSortableColumn="informacao">Informação<p-sortIcon field="informacao"></p-sortIcon>
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-selectedRecord>
+            <tr>
+
+                <td class="table-acoes">
+                    <button pButton pRipple icon="pi pi-download"
+                        class="p-button-rounded p-button-outlined p-button-info mr-1"
+                        (click)="captureItem(selectedRecord)">
+                    </button>
+
+                </td>
+                <td>{{selectedRecord.nome}}</td>
+                <td>
+                    <textarea type="text" [(ngModel)]="selectedRecord.informacao" pInputTextarea autofocus rows="3"
+                        cols="100" style="-webkit-box-sizing: border-box;
+                           -moz-box-sizing: border-box;
+                           box-sizing: border-box;
+                       
+                           width: 100%;" disabled="true"></textarea>
+                </td>
+
+
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="summary">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                Total de registros: {{informacoes ? informacoes.length : 0 }}
+            </div>
+        </ng-template>
+
+    </p-table>
+
+</p-dialog>
+
+<p-dialog header="Nova Localização" styleClass="p-fluid" [breakpoints]="{'860px': '75vw', '540px': '100vw'}"
+    [style]="{width: '50vw'}" [maximizable]="true" [modal]="true" [(visible)]="newLocalizacao">
+
+    <div class="p-field">
+        <label for="paisNew">Pais</label>
+        <input id="paisNew" type="text" [(ngModel)]="pais" pInputText class="to-upper-case" autofocus />
+
+    </div>
+    <div class="p-field">
+        <label for="estadoNew">Estado</label>
+        <input id="estadoNew" type="text" [(ngModel)]="estado" pInputText class="to-upper-case" autofocus />
+
+    </div>
+    <div class="p-field">
+        <label for="LocalNew">Local</label>
+        <input id="localNew" type="text" [(ngModel)]="local" pInputText class="to-upper-case" autofocus />
+
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <button pButton pRipple label="Salvar Localização" icon="pi pi-check" (click)="salvarLocalizacaoOnClick()"
+                class="p-button-sm">
+            </button>
+        </div>
+    </div>
+</p-dialog>

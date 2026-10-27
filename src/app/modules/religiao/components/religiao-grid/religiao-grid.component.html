@@ -1,0 +1,134 @@
+<section class="content-header">
+
+    <p-panel header="Cadastro de Religião">
+  
+      <p-toolbar styleClass="mb-4">
+  
+        <ng-template pTemplate="left">
+          <input pInputText
+            type="text"
+            placeholder="Pesquisar..."
+            (input)="dt.filterGlobal($event.target.value, 'contains')"
+          />
+        </ng-template>
+  
+        <ng-template pTemplate="right">
+          <button pButton pRipple
+            label=""
+            pTooltip="cria um novo registro"
+            tooltipPosition="top"
+            icon="pi pi-plus"
+            class="p-button-sm p-button-success mr-1"
+            (click)="createOnClick()">
+          </button>
+  
+          <button pButton pRipple
+            label=""
+            pTooltip="exclui os registros selecionados"
+            tooltipPosition="top"
+            icon="pi pi-trash"
+            class="p-button-sm p-button-danger mr-1"
+            [disabled]="!selectedRecords || !selectedRecords.length"
+            (click)="deleteBulkOnClick()">
+          </button>
+  
+          <button pButton pRipple
+            label=""
+            pTooltip="atualiza a lista de registros"
+            tooltipPosition="top"
+            icon="pi pi-refresh"
+            class="p-button-sm p-button-info"
+            (click)="refreshOnClick()">
+          </button>
+
+         <button pButton pRipple
+          label=""
+          pTooltip="Prepara consulta para Impressão"
+          tooltipPosition="top"
+          icon="pi pi-print"
+          class="p-button-sm p-button-secondary"
+          onclick="window.print();">
+        </button>
+        </ng-template>
+  
+      </p-toolbar>
+  
+      <p-table #dt
+        dataKey="id"
+        [value]="records"
+        [(selection)]="selectedRecords"
+        [globalFilterFields]="['id','nome']"
+        [paginator]="true"
+        [rows]="15"
+        [rowsPerPageOptions]="[15, 20, 50, 100]"
+        sortMode="multiple"
+        [scrollable]="true"
+        [resizableColumns]="true"
+        responsiveLayout="stack"
+        styleClass="p-datatable-sm"
+        [rowHover]="true"
+        [responsive]="true"
+        currentPageReportTemplate="Listando {first} a {last} de {totalRecords} registros"
+        [showCurrentPageReport]="true">
+  
+        <ng-template pTemplate="header">
+          <tr>
+            <th pResizableColumn class="table-check-selected">
+              
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th class="table-acoes">Ações</th>
+            <th pResizableColumn class="table-id" pSortableColumn="id">Id<p-sortIcon field="id"></p-sortIcon></th>
+            <th pResizableColumn pSortableColumn="nome">Nome<p-sortIcon field="nome"></p-sortIcon></th>
+            <th pResizableColumn>Informacao</th>
+                       
+          </tr>
+        </ng-template>
+  
+        <ng-template pTemplate="body" let-selectedRecord>
+          <tr>
+            <td class="table-check-selected">
+              <p-tableCheckbox [value]="selectedRecord"></p-tableCheckbox>
+            </td>
+            <td class="table-acoes">
+              <button pButton pRipple
+                pTooltip="Edita dados do Signo"
+                tooltipPosition="top"
+                icon="pi pi-pencil"
+                class="p-button-sm p-button-rounded p-button-outlined p-button-info mr-1"
+                (click)="editOnClick(selectedRecord)">
+              </button>
+  
+              <button pButton pRipple
+                pTooltip="Exclui Registro"
+                tooltipPosition="top"
+                icon="pi pi-trash"
+                class="p-button-sm p-button-rounded p-button-outlined p-button-danger"
+                (click)="deleteOnClick(selectedRecord)">
+              </button>
+  
+            </td>
+            <td class="table-id" >{{selectedRecord.id}}</td>
+            <td>{{selectedRecord.nome}}</td>
+            <td><textarea rows="5" cols="50" disabled>{{selectedRecord.informacao}}</textarea></td>
+            
+            
+          </tr>
+        </ng-template>
+  
+        <ng-template pTemplate="summary">
+          <div class="p-d-flex p-ai-center p-jc-between">
+            Total de registros: {{records ? records.length : 0 }}
+          </div>
+        </ng-template>
+  
+      </p-table>
+    </p-panel>
+  
+  </section>
+  
+  <religiao-form
+    [formData]="selectedRecord"
+    (afterSave)="loadRecordList()">
+  </religiao-form>
+  
